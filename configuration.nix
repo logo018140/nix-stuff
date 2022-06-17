@@ -419,7 +419,6 @@ in
 
   programs.fish = {
     enable = true;  
-    
   };
 
   programs.steam = {
