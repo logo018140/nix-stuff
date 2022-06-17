@@ -110,7 +110,7 @@ in
   # Use EFI boot loader with Grub.
   # https://nixos.org/manual/nixos/stable/index.html#sec-installation-partitioning-UEFI
   boot = {
-    kernelPackages = pkgs.linuxPackages_zen
+    kernelPackages = pkgs.linuxPackages_zen;
 	  supportedFilesystems = [ "vfat" "zfs" ];
 	  loader = {
       #systemd-boot.enable = true;
