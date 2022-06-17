@@ -430,6 +430,7 @@ in
   xdg-utils noto-fonts-cjk-sans
   noto-fonts-cjk-serif
   xsettingsd gnome.gnome-keyring
+  steamPackages.steamcmd
   ];
 
 ################################################################################
