@@ -425,7 +425,7 @@ in
   xdg-utils noto-fonts-cjk-sans
   noto-fonts-cjk-serif
   xsettingsd gnome.gnome-keyring
-  steamPackages.steamcmd
+  steamPackages.steamcmd gnome.seahorse
   ];
 
 ################################################################################
@@ -445,9 +445,4 @@ in
   hardware.ckb-next.enable = true;
   
   services.gnome.gnome-keyring.enable = true;
-
-  programs.nix-index = {
-    enable = true;
-    enable<SHELL>Integration = true;
-  };
 }
