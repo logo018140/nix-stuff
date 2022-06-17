@@ -357,6 +357,25 @@ in
     };
   };
 
+  environment.sessionVariables = rec {
+    XDG_DATA_HOME ="\${HOME}/.local/share"
+    XDG_CONFIG_HOME ="\${HOME}/.config"
+    XDG_STATE_HOME ="\${HOME}/.local/state"
+    XDG_CACHE_HOME ="\${HOME}/.cache"
+    CARGO_HOME ="\${XDG_DATA_HOME}/cargo"
+    GNUPGHOME ="\${XDG_DATA_HOME}/gnupg"
+    GOPATH ="\${XDG_DATA_HOME}/go"
+    LESSHISTFILE ="\${XDG_CACHE_HOME}/less/history"
+    NUGET_PACKAGES ="\${XDG_CACHE_HOME}/NuGetPackages"
+    PARALLEL_HOME ="\${XDG_CONFIG_HOME}/parallel"
+    RUSTUP_HOME ="\${XDG_DATA_HOME}/rustup"
+    WINEPREFIX ="\${XDG_DATA_HOME}/wine"
+    _JAVA_OPTIONS =-Djava.util.prefs.userRoot="\${XDG_CONFIG_HOME}/java"
+    GTK2_RC_FILES ="\${XDG_CONFIG_HOME}/gtk-2.0/gtkrc"
+    MPLAYER_HOME = "\${$XDG_CONFIG_HOME}/mplayer"
+    GRADLE_USER_HOME="\${XDG_DATA_HOME}/gradle"
+  };
+
 ################################################################################
 # Applications
 ################################################################################
@@ -410,7 +429,7 @@ in
   libsForQt5.qtstyleplugin-kvantum xdg-user-dirs
   xdg-utils noto-fonts-cjk-sans
   noto-fonts-cjk-serif
-  xsettingsd
+  xsettingsd gnome.gnome-keyring
   ];
 
 ################################################################################
@@ -429,4 +448,5 @@ in
 
   hardware.ckb-next.enable = true;
   
+  services.gnome.gnome-keyring.enable = true;
 }
