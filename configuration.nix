@@ -41,7 +41,7 @@ let
       in ''
         export XDG_DATA_DIRS=${datadir}:$XDG_DATA_DIRS
         gnome_schema=org.gnome.desktop.interface
-        gsettings set $gnome_schema gtk-theme 'Dracula'
+        gsettings set $gnome_schema gtk-theme 'Adapta-Nokto'
         '';
   };
 
@@ -111,20 +111,20 @@ in
   # https://nixos.org/manual/nixos/stable/index.html#sec-installation-partitioning-UEFI
   boot = {
     kernelPackages = pkgs.linuxPackages_zen;
-	  supportedFilesystems = [ "vfat" "zfs" ];
-	  loader = {
+    supportedFilesystems = [ "vfat" "zfs" ];
+    loader = {
       #systemd-boot.enable = true;
       efi = {
-      	#canTouchEfiVariables = true;  # must be disabled if efiInstallAsRemovable=true
-      	#efiSysMountPoint = "/boot/efi";  # using the default /boot for this config
+        #canTouchEfiVariables = true;  # must be disabled if efiInstallAsRemovable=true
+        #efiSysMountPoint = "/boot/efi";  # using the default /boot for this config
       };
       grub = {
-      	enable = true;
-      	efiSupport = true;
-      	efiInstallAsRemovable = true;  # grub will use efibootmgr 
-      	zfsSupport = true;
- 	  	  copyKernels = true;  # https://nixos.wiki/wiki/NixOS_on_ZFS
-      	device = "nodev";  # "/dev/sdx", or "nodev" for efi only
+        enable = true;
+        efiSupport = true;
+        efiInstallAsRemovable = true;  # grub will use efibootmgr 
+        zfsSupport = true;
+         copyKernels = true;  # https://nixos.wiki/wiki/NixOS_on_ZFS
+        device = "nodev";  # "/dev/sdx", or "nodev" for efi only
       };
     };
   };
@@ -181,23 +181,23 @@ in
   
   environment.etc = {
 
-  	# /etc/nixos: requires /persist/etc/nixos 
-  	"nixos".source = "/persist/etc/nixos";
-  	
+    # /etc/nixos: requires /persist/etc/nixos 
+    "nixos".source = "/persist/etc/nixos";
+    
         #NetworkManager/system-connections: requires /persist/etc/NetworkManager/system-connections
-  	"NetworkManager/system-connections".source = "/persist/etc/NetworkManager/system-connections/";
-  	
-  	# machine-id is used by systemd for the journal, if you don't persist this 
-  	# file you won't be able to easily use journalctl to look at journals for 
-  	# previous boots.
-  	"machine-id".source = "/persist/etc/machine-id";
-  	
-  	# if you want to run an openssh daemon, you may want to store the host keys 
-  	# across reboots.
+    "NetworkManager/system-connections".source = "/persist/etc/NetworkManager/system-connections/";
+    
+    # machine-id is used by systemd for the journal, if you don't persist this 
+    # file you won't be able to easily use journalctl to look at journals for 
+    # previous boots.
+    "machine-id".source = "/persist/etc/machine-id";
+    
+    # if you want to run an openssh daemon, you may want to store the host keys 
+    # across reboots.
         "ssh/ssh_host_rsa_key".source = "/persist/etc/ssh/ssh_host_rsa_key";
-	"ssh/ssh_host_rsa_key.pub".source = "/persist/etc/ssh/ssh_host_rsa_key.pub";
-	"ssh/ssh_host_ed25519_key".source = "/persist/etc/ssh/ssh_host_ed25519_key";
-	"ssh/ssh_host_ed25519_key.pub".source = "/persist/etc/ssh/ssh_host_ed25519_key.pub";
+  "ssh/ssh_host_rsa_key.pub".source = "/persist/etc/ssh/ssh_host_rsa_key.pub";
+  "ssh/ssh_host_ed25519_key".source = "/persist/etc/ssh/ssh_host_ed25519_key";
+  "ssh/ssh_host_ed25519_key.pub".source = "/persist/etc/ssh/ssh_host_ed25519_key.pub";
 
   };
   
@@ -249,8 +249,8 @@ in
 ################################################################################
   
   hardware.opengl = {
-  	driSupport = true;  # install and enable Vulkan: https://nixos.org/manual/nixos/unstable/index.html#sec-gpu-accel
-	  driSupport32Bit = true;
+    driSupport = true;  # install and enable Vulkan: https://nixos.org/manual/nixos/unstable/index.html#sec-gpu-accel
+    driSupport32Bit = true;
   };
   
   # Enable X11 + Nvidia
@@ -335,23 +335,23 @@ in
     defaultUserShell = pkgs.fish;
     users = {
       root = {
-      	# disable root login here, and also when installing nix by running nixos-install --no-root-passwd
+        # disable root login here, and also when installing nix by running nixos-install --no-root-passwd
         # https://discourse.nixos.org/t/how-to-disable-root-user-account-in-configuration-nix/13235/3
         hashedPassword = "!";  # disable root logins, nothing hashes to !
       };
       test = {
-      	isNormalUser = true;
-      	description = "Non-sudo account for testing new config options that could break login.  If need sudo for testing, add 'wheel' to extraGroups and rebuild.";
+        isNormalUser = true;
+        description = "Non-sudo account for testing new config options that could break login.  If need sudo for testing, add 'wheel' to extraGroups and rebuild.";
         initialPassword = "password";
         #passwordFile = "/persist/etc/users/test";
-	      extraGroups = [ "networkmanager" ];
+        extraGroups = [ "networkmanager" ];
         #openssh.authorizedKeys.keys = [ "${AUTHORIZED_SSH_KEY}" ];
       };
       lfron = {
-      	isNormalUser = true;
-      	description = "Logan Fron";
+        isNormalUser = true;
+        description = "Logan Fron";
         passwordFile = "/persist/etc/users/lfron";  
-	      extraGroups = [ "wheel" "networkmanager" ];
+        extraGroups = [ "wheel" "networkmanager" ];
         #openssh.authorizedKeys.keys = [ "${AUTHORIZED_SSH_KEY}" ];
       };
     };
@@ -365,45 +365,52 @@ in
   # $ nix search <packagename>
   environment.binsh = "${pkgs.dash}/bin/dash";
   environment.systemPackages = with pkgs; [
-  	
+    
   # system core (useful for a minimal first install)
   nix-index 
-	efibootmgr 
+  efibootmgr 
   parted gparted gptfdisk 
-	pciutils uutils-coreutils wget  
+  pciutils uutils-coreutils wget  
   openssh ssh-copy-id ssh-import-id fail2ban sshguard
-	git git-extras 
+  git git-extras 
   zsh ffmpeg
   librewolf-wayland
   screen tmux
-	vim wpgtk
+  vim wpgtk
   htop ncdu 
   sway alacritty
-	dbus-sway-environment configure-gtk
-	wayland glib
-	capitaine-cursors swaylock-effects
-	swayidle grim
-	slurp wl-clipboard
-	wofi mako
-	mpv lutris
-	xivlauncher python
-	wine-staging winetricks
-	protontricks waybar
-	adapta-gtk-theme adapta-kde-theme
-	ckb-next easyeffects
-	openrgb yadm
-	mpd mpd-mpris
-	playerctl steam
-	pywal bitwarden
-	exa gamemode
-	helvum irqbalance
-	ncmpcpp noto-fonts
-	noto-fonts-extra noto-fonts-emoji
-	openvpn pavucontrol
-	pcmanfm radeontop
-	swappy zoxide
+  dbus-sway-environment configure-gtk
+  wayland glib
+  capitaine-cursors swaylock-effects
+  swayidle grim
+  slurp wl-clipboard
+  wofi mako
+  mpv lutris
+  xivlauncher python
+  wine-staging winetricks
+  protontricks waybar
+  adapta-gtk-theme adapta-kde-theme
+  ckb-next easyeffects
+  openrgb yadm
+  mpd mpd-mpris
+  playerctl steam
+  pywal bitwarden
+  exa gamemode
+  helvum irqbalance
+  ncmpcpp noto-fonts
+  noto-fonts-extra noto-fonts-emoji
+  openvpn pavucontrol
+  pcmanfm radeontop
+  swappy zoxide
   fish dconf
   patchelf dash
+  papirus-icon-theme libsForQt5.qt5ct
+  killall polkit
+  polkit_gnome discord
+  libsForQt5.qtstyleplugin-kvantum xdg-user-dirs
+  xdg-utils noto-fonts-cjk-sans
+  noto-fonts-cjk-serif
+  xsettingsd
   ];
 
 ################################################################################
