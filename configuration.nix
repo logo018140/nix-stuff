@@ -369,10 +369,6 @@ in
     _JAVA_OPTIONS   = "-Djava.util.prefs.userRoot=\${XDG_CONFIG_HOME}/java";
     GTK2_RC_FILES   = "\${XDG_CONFIG_HOME}/gtk-2.0/gtkrc";
     MPLAYER_HOME    = "\${XDG_CONFIG_HOME}/mplayer";
-
-    PATH = [ 
-      "\${XDG_BIN_HOME}"
-    ];
   };
 
 ################################################################################
@@ -449,4 +445,9 @@ in
   hardware.ckb-next.enable = true;
   
   services.gnome.gnome-keyring.enable = true;
+
+  programs.nix-index = {
+    enable = true;
+    enable<SHELL>Integration = true;
+  };
 }
