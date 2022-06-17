@@ -370,7 +370,7 @@ in
     PARALLEL_HOME ="\${XDG_CONFIG_HOME}/parallel";
     RUSTUP_HOME ="\${XDG_DATA_HOME}/rustup";
     WINEPREFIX ="\${XDG_DATA_HOME}/wine";
-    _JAVA_OPTIONS =-Djava.util.prefs.userRoot="\${XDG_CONFIG_HOME}/java";
+    _JAVA_OPTIONS ="-Djava.util.prefs.userRoot=\${XDG_CONFIG_HOME}/java";
     GTK2_RC_FILES ="\${XDG_CONFIG_HOME}/gtk-2.0/gtkrc";
     MPLAYER_HOME = "\${$XDG_CONFIG_HOME}/mplayer";
     GRADLE_USER_HOME="\${XDG_DATA_HOME}/gradle";
