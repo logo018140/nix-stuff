@@ -363,19 +363,19 @@ in
   # $ nix search <packagename>
   environment.systemPackages = with pkgs; [
   	
-  	# system core (useful for a minimal first install)
-  	nix-index 
+  # system core (useful for a minimal first install)
+  nix-index 
 	efibootmgr 
-  	parted gparted gptfdisk 
+  parted gparted gptfdisk 
 	pciutils uutils-coreutils wget  
-    	openssh ssh-copy-id ssh-import-id fail2ban sshguard
+  openssh ssh-copy-id ssh-import-id fail2ban sshguard
 	git git-extras 
-  	zsh oh-my-zsh 
-    	librewolf-wayland
-  	screen tmux
+  zsh oh-my-zsh 
+  librewolf-wayland
+  screen tmux
 	vim emacs  
-  	htop ncdu 
-   	sway alacritty
+  htop ncdu 
+  sway alacritty
 	dbus-sway-environment configure-gtk
 	wayland glib
 	capitaine-cursors swaylock-effects
