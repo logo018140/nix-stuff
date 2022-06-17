@@ -215,8 +215,7 @@ cp "$PWD"/configuration.nix /mnt/etc/nixos/configuration.nix
 cp "$PWD"/configuration.nix /mnt/persist/etc/nixos/configuration.nix
 cp /mnt/etc/nixos/hardware-configuration.nix /mnt/persist/etc/nixos/hardware-configuration.nix
 
-
-pprint "Configuration complete.  To install, run 'nixos-install --no-root-passwd'."
+nixos-install --no-root-passwd
 #if install fails, try the install script below:
 
 # ---- install script ---- 

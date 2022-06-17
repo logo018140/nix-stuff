@@ -110,8 +110,9 @@ in
   # Use EFI boot loader with Grub.
   # https://nixos.org/manual/nixos/stable/index.html#sec-installation-partitioning-UEFI
   boot = {
-	supportedFilesystems = [ "vfat" "zfs" ];
-	loader = {
+    kernelPackages = pkgs.linuxPackages_zen
+	  supportedFilesystems = [ "vfat" "zfs" ];
+	  loader = {
       #systemd-boot.enable = true;
       efi = {
       	#canTouchEfiVariables = true;  # must be disabled if efiInstallAsRemovable=true
@@ -122,7 +123,7 @@ in
       	efiSupport = true;
       	efiInstallAsRemovable = true;  # grub will use efibootmgr 
       	zfsSupport = true;
- 	  	copyKernels = true;  # https://nixos.wiki/wiki/NixOS_on_ZFS
+ 	  	  copyKernels = true;  # https://nixos.wiki/wiki/NixOS_on_ZFS
       	device = "nodev";  # "/dev/sdx", or "nodev" for efi only
       };
     };
@@ -139,6 +140,7 @@ in
   boot.kernelParams = [ "elevator=none" ];
 
   boot.zfs = {
+    enableUnstable = true;
     requestEncryptionCredentials = true; # enable if using ZFS encryption, ZFS will prompt for password during boot
   };
 
@@ -330,7 +332,7 @@ in
   
   users = {
     mutableUsers = false;
-    defaultUserShell = "/var/run/current-system/sw/bin/zsh";
+    defaultUserShell = pkgs.fish;
     users = {
       root = {
       	# disable root login here, and also when installing nix by running nixos-install --no-root-passwd
@@ -361,6 +363,7 @@ in
 
   # List packages installed in system profile. To search, run:
   # $ nix search <packagename>
+  environment.binsh = "${pkgs.dash}/bin/dash";
   environment.systemPackages = with pkgs; [
   	
   # system core (useful for a minimal first install)
@@ -370,10 +373,10 @@ in
 	pciutils uutils-coreutils wget  
   openssh ssh-copy-id ssh-import-id fail2ban sshguard
 	git git-extras 
-  zsh oh-my-zsh 
+  zsh ffmpeg
   librewolf-wayland
   screen tmux
-	vim emacs  
+	vim wpgtk
   htop ncdu 
   sway alacritty
 	dbus-sway-environment configure-gtk
@@ -398,23 +401,18 @@ in
 	noto-fonts-extra noto-fonts-emoji
 	openvpn pavucontrol
 	pcmanfm radeontop
-	swappy
+	swappy zoxide
+  fish dconf
+  patchelf dash
   ];
 
 ################################################################################
 # Program Config
 ################################################################################
 
-  programs.zsh = {
+  programs.fish = {
     enable = true;  
-    ohMyZsh = {
-      enable = true;
-      plugins = [ "colored-man-pages" "colorize" "command-not-found" "git" "git-extras" "history" "man" "rsync" "safe-paste" "scd" "screen" "systemd" "tmux" "urltools" "vi-mode" "z" "zsh-interactive-cd" ]; 
-      theme = "juanghurtado";
-      #theme = "jonathan"; 
-      # themes displaying commit hash: jonathan juanghurtado peepcode simonoff smt sunrise sunaku theunraveler 
-      # cool themes: linuxonly agnoster blinks crcandy crunch essembeh flazz frisk gozilla itchy gallois eastwood dst clean bureau bira avit nanotech nicoulaj rkj-repos ys darkblood fox 
-    };
+    
   };
 
   programs.steam = {
@@ -422,5 +420,7 @@ in
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
       dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
+
+  hardware.ckb-next.enable = true;
   
 }
