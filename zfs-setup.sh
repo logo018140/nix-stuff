@@ -10,7 +10,7 @@
 # 4. ZFS datasets - rpool/local/nix, rpool/safe/[home,persist], rpool/reserved
 # 5. mounts all of the above (except rpool/reserved which should never be mounted)
 # 6. generates hardware-configuration.nix customized to this machine and tmpfs
-# 7. generates a generic default configuration.nix replace-able with a custom one
+# 7. generates a generic default configuration.nix replace-able with a custom one (done in this instance)
 #
 # https://www.reddit.com/r/NixOS/comments/o1er2p/tmpfs_as_root_but_without_hardcoding_your/
 # https://www.reddit.com/r/NixOS/comments/g9wks6/root_on_tmpfs/
