@@ -293,7 +293,6 @@ in {
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
     jack.enable = true;
   };
 
@@ -330,9 +329,7 @@ in {
         isNormalUser = true;
         description = "Non-sudo account for testing new config options that could break login.  If need sudo for testing, add 'wheel' to extraGroups and rebuild.";
         initialPassword = "password";
-        #passwordFile = "/persist/etc/users/test";
         extraGroups = ["networkmanager"];
-        #openssh.authorizedKeys.keys = [ "${AUTHORIZED_SSH_KEY}" ];
       };
       lfron = {
         isNormalUser = true;
@@ -362,7 +359,6 @@ in {
   # $ nix search <packagename>
   environment.binsh = "${pkgs.dash}/bin/dash";
   environment.systemPackages = with pkgs; [
-    # system core (useful for a minimal first install)
     nix-index
     efibootmgr
     parted
@@ -405,9 +401,9 @@ in {
     lutris
     xivlauncher
     python39Full
-    wine-staging
-    winetricks
-    protontricks
+    wineWowPackages.staging
+    (winetricks.override { wine = wineWowPackages.staging; })
+    (protontricks.override { wine = wineWowPackages.staging; })
     waybar
     adapta-gtk-theme
     adapta-kde-theme
