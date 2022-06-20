@@ -42,7 +42,7 @@
 # zfs unmount -a (unmount everything, only usable with non-legacy datasets)
 # umount -R /mnt (unmount everything in /mnt recursively, required for legacy zfs datasets)
 # zpool export $POOL (disconnects the pool)
-# zpool remove $POOL sda1 (removes the disk from your zpool)
+# zpool remove $POOL sda1 (removes the disk from your zpool) ^^
 # zpool destroy $POOL (this destroys the pool and it's gone and rather difficult to retrieve)
 
 # Some ZFS properties cannot be changed after the pool and/or datasets are created.  Some discussion on this:
