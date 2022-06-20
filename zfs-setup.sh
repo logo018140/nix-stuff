@@ -34,7 +34,7 @@
 #useful commands
 # mount -l | grep sda
 # findmnt | grep zfs
-# lsblk
+# lsblka
 # ncdu -x /
 # zpool list
 # zfs list -o name,mounted,mountpoint
