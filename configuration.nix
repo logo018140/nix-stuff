@@ -10,7 +10,6 @@
   #Sway GTK stuff
   # bash script to let dbus know about important env variables and
   # propogate them to relevent services run at the end of sway config
-  # see
   # https://github.com/emersion/xdg-desktop-portal-wlr/wiki/"It-doesn't-work"-Troubleshooting-Checklist
   # note: this is pretty much the same as  /etc/sway/config.d/nixos.conf but also restarts
   # some user services to make sure they have the correct environment variables
@@ -55,21 +54,9 @@ in {
   ################################################################################
 
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
 
-  # Default nixPath.  Uncomment and modify to specify non-default nixPath
-  # https://search.nixos.org/options?query=nix.nixPath
-  #nix.nixPath =
-  #  [
-  #    "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos"
-  #    "nixos-config=/persist/etc/nixos/configuration.nix"
-  #    "/nix/var/nix/profiles/per-user/root/channels"
-  #  ];
-
-  # Enable non-free packages (Nvidia driver, etc)
-  # Reboot after rebuilding to prevent possible clash with other kernel modules
   nixpkgs.config = {
     allowUnfree = true;
   };
@@ -163,11 +150,7 @@ in {
   networking = {
     #hostId = "$(head -c 8 /etc/machine-id)";  # required by zfs. hardware-specific so should be set in hardware-configuration.nix
     hostName = "nixPC"; # Any arbitrary hostname.
-    #wireless.enable = true;  # Wireless via wpa_supplicant. Unecessary with Gnome.
 
-    # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-    # Per-interface useDHCP will be mandatory in the future, so this generated config
-    # replicates the default behaviour.
     useDHCP = false;
     interfaces = {
       enp35s0.useDHCP = true;
@@ -217,6 +200,7 @@ in {
     "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
     "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
     "L /var/lib/acme - - - - /persist/var/lib/acme"
+    "L /var/lib/sshguard - - - - /persist/var/lib/sshguard"
   ];
 
   ################################################################################
@@ -297,13 +281,6 @@ in {
   };
 
   ################################################################################
-  # Input
-  ################################################################################
-
-  # Enable touchpad support (enabled by default in most desktopManagers).
-  # services.xserver.libinput.enable = true;
-
-  ################################################################################
   # Users
   ################################################################################
 
@@ -348,7 +325,6 @@ in {
     XDG_BIN_HOME = "\${HOME}/.local/bin";
     XDG_DATA_HOME = "\${HOME}/.local/share";
     QT_QPA_PLATFORMTHEME = "qt5ct";
-    QT_STYLE_OVERRIDE = "qt5ct";
   };
 
   ################################################################################
@@ -370,8 +346,6 @@ in {
     openssh
     ssh-copy-id
     ssh-import-id
-    fail2ban
-    sshguard
     git
     git-extras
     zsh
@@ -380,7 +354,6 @@ in {
     screen
     tmux
     vim
-    wpgtk
     htop
     ncdu
     sway
@@ -402,13 +375,11 @@ in {
     xivlauncher
     python39Full
     wineWowPackages.staging
-    (winetricks.override { wine = wineWowPackages.staging; })
-    (protontricks.override { wine = wineWowPackages.staging; })
+    winetricks
+    protontricks
     waybar
     adapta-gtk-theme
     adapta-kde-theme
-    ckb-next
-    noisetorch
     openrgb
     yadm
     mpd
@@ -434,19 +405,15 @@ in {
     libsForQt5.qt5ct
     killall
     polkit
-    polkit_gnome
     discord
     libsForQt5.qtstyleplugin-kvantum
     xdg-user-dirs
     xdg-utils
-    gnome.seahorse
     xsettingsd
-    gnome.gnome-keyring
     steamPackages.steamcmd
     pavucontrol
     gnome.zenity
     openssl
-    python39Packages.pip
     protonup
     python39Packages.pyotp
     betterdiscordctl
@@ -456,21 +423,20 @@ in {
     file
     perl
     alejandra
+    bottles
+    gamemode
+    polymc
   ];
 
   fonts.fonts = with pkgs; [
     noto-fonts
-    noto-fonts-cjk
     noto-fonts-emoji
     noto-fonts-extra
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
-    liberation_ttf
     fira-code
     fira-code-symbols
     mplus-outline-fonts.githubRelease
-    dina-font
-    proggyfonts
     (nerdfonts.override {fonts = ["Noto"];})
   ];
 
@@ -479,16 +445,15 @@ in {
   ################################################################################
 
   programs.fish.enable = true;
+  programs.noisetorch.enable = true;
+  services.gnome.gnome-keyring.enable = true;
+  hardware.ckb-next.enable = true;
+  services.sshguard.enable = true;
 
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
-
-  hardware.ckb-next.enable = true;
-
-  services.gnome.gnome-keyring.enable = true;
 
   services.mpd = {
     enable = true;
@@ -498,27 +463,17 @@ in {
     dbFile = "/home/lfron/.config/mpd/database";
     dataDir = "/home/lfron/.config/mpd";
     extraConfig = ''
-      # must specify one or more outputs in order to play audio!
-      # (e.g. ALSA, PulseAudio, PipeWire), see next sections
       audio_output {
-        type "pulse"
-        name "Pulseaudio"
-        mixer_type      "hardware"      # optional
-        mixer_device    "default"       # optional
-        mixer_control   "PCM"           # optional
-        mixer_index     "0"             # optional
-      }  '';
+        type "pipewire"
+        name "Pipewire"
+      }
+    '';
     startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
   };
-
   systemd.services.mpd.environment = {
     # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
     XDG_RUNTIME_DIR = "/run/user/1000"; # User-id 1000 must match above user. MPD will look inside this directory for the PipeWire socket.
   };
-
-  programs.noisetorch.enable = true;
-
-  programs.java.enable = true;
 
   programs.gamemode = {
     enable = true;
