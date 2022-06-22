@@ -397,7 +397,11 @@ in
   programs.noisetorch.enable = true;
   services.gnome.gnome-keyring.enable = true;
   hardware.ckb-next.enable = true;
-  services.gvfs.enable = true;
+
+  services.gvfs = {
+    enable = true;
+    package = lib.mkForce pkgs.gnome3.gvfs;
+  };
 
   programs.steam = {
     enable = true;
