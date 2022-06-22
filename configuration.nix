@@ -375,6 +375,7 @@ in
     sway-contrib.grimshot
     yt-dlp
     qbittorrent
+    desktop-file-utils
   ];
 
   fonts.fonts = with pkgs; [
