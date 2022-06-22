@@ -376,6 +376,8 @@ in
     yt-dlp
     qbittorrent
     desktop-file-utils
+    gnome.seahorse
+    swappy
   ];
 
   fonts.fonts = with pkgs; [
