@@ -380,6 +380,7 @@ in
     gnome.seahorse
     swappy
     jdk11
+    virt-manager
   ];
 
   fonts.fonts = with pkgs; [
@@ -403,6 +404,12 @@ in
   services.gnome.gnome-keyring.enable = true;
   hardware.ckb-next.enable = true;
   programs.adb.enable = true;
+
+  virtualisation.libvirtd = {
+    enable = true;
+    onBoot = "ignore";
+    onShutdown = "shutdown";
+  };
 
   services.gvfs = {
     enable = true;
