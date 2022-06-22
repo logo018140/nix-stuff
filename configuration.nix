@@ -152,278 +152,280 @@ in
     };
   };
 
-  services.openvpn.servers =
-    {
-      piaAtlanta = { config = '' config /persist/openvpn/us_atlanta.conf ''; };
-    }
+  services.openvpn.servers = {
+    piaAtlanta = { config = '' config /persist/openvpn/us_atlanta.conf ''; };
+    piaAtlanta.autoStart = false;
+  };
 
-      ################################################################################
-      # Persisted Artifacts
-      ################################################################################
+  ################################################################################
+  # Persisted Artifacts
+  ################################################################################
 
-      #Erase Your Darlings & Tmpfs as Root:
-      # config/secrets/etc to be persisted across tmpfs reboots and rebuilds.  setup
-      # soft-links from /persist/<loc on root> to their expected location on /<loc on root>
-      # https://github.com/barrucadu/nixfiles/blob/master/hosts/nyarlathotep/configuration.nix
-      # https://grahamc.com/blog/erase-your-darlings
-      # https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/
+  #Erase Your Darlings & Tmpfs as Root:
+  # config/secrets/etc to be persisted across tmpfs reboots and rebuilds.  setup
+  # soft-links from /persist/<loc on root> to their expected location on /<loc on root>
+  # https://github.com/barrucadu/nixfiles/blob/master/hosts/nyarlathotep/configuration.nix
+  # https://grahamc.com/blog/erase-your-darlings
+  # https://elis.nu/blog/2020/05/nixos-tmpfs-as-root/
 
-      environment.etc = {
-  # /etc/nixos: requires /persist/etc/nixos
-  "nixos".source = "/persist/etc/nixos";
+  environment.etc = {
+    # /etc/nixos: requires /persist/etc/nixos
+    "nixos".source = "/persist/etc/nixos";
 
-  #NetworkManager/system-connections: requires /persist/etc/NetworkManager/system-connections
-  "NetworkManager/system-connections".source = "/persist/etc/NetworkManager/system-connections/";
+    #NetworkManager/system-connections: requires /persist/etc/NetworkManager/system-connections
+    "NetworkManager/system-connections".source = "/persist/etc/NetworkManager/system-connections/";
 
-  # machine-id is used by systemd for the journal, if you don't persist this
-  # file you won't be able to easily use journalctl to look at journals for
-  # previous boots.
-  "machine-id".source = "/persist/etc/machine-id";
+    # machine-id is used by systemd for the journal, if you don't persist this
+    # file you won't be able to easily use journalctl to look at journals for
+    # previous boots.
+    "machine-id".source = "/persist/etc/machine-id";
 
-  # if you want to run an openssh daemon, you may want to store the host keys
-  # across reboots.
-  "ssh/ssh_host_rsa_key".source = "/persist/etc/ssh/ssh_host_rsa_key";
-  "ssh/ssh_host_rsa_key.pub".source = "/persist/etc/ssh/ssh_host_rsa_key.pub";
-  "ssh/ssh_host_ed25519_key".source = "/persist/etc/ssh/ssh_host_ed25519_key";
-  "ssh/ssh_host_ed25519_key.pub".source = "/persist/etc/ssh/ssh_host_ed25519_key.pub";
-};
+    # if you want to run an openssh daemon, you may want to store the host keys
+    # across reboots.
+    "ssh/ssh_host_rsa_key".source = "/persist/etc/ssh/ssh_host_rsa_key";
+    "ssh/ssh_host_rsa_key.pub".source = "/persist/etc/ssh/ssh_host_rsa_key.pub";
+    "ssh/ssh_host_ed25519_key".source = "/persist/etc/ssh/ssh_host_ed25519_key";
+    "ssh/ssh_host_ed25519_key.pub".source = "/persist/etc/ssh/ssh_host_ed25519_key.pub";
+  };
 
-#3. Bluetooth: requires /persist/var/lib/bluetooth
-#4. ACME certificates: requires /persist/var/lib/acme
-systemd.tmpfiles.rules = [
-"L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
-"L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
-"L /var/lib/acme - - - - /persist/var/lib/acme"
-];
+  #3. Bluetooth: requires /persist/var/lib/bluetooth
+  #4. ACME certificates: requires /persist/var/lib/acme
+  systemd.tmpfiles.rules = [
+    "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
+    "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
+    "L /var/lib/acme - - - - /persist/var/lib/acme"
+  ];
 
-################################################################################
-# GnuPG & SSH
-################################################################################
+  ################################################################################
+  # GnuPG & SSH
+  ################################################################################
 
-# Enable the OpenSSH daemon.
-services.openssh = {
-enable = true;
-permitRootLogin = "no";
-passwordAuthentication = false;
-hostKeys = [
-{
-path = "/persist/etc/ssh/ssh_host_ed25519_key";
-type = "ed25519";
-}
-{
-path = "/persist/etc/ssh/ssh_host_rsa_key";
-type = "rsa";
-bits = 4096;
-}
-];
-};
+  # Enable the OpenSSH daemon.
+  services.openssh = {
+    enable = true;
+    permitRootLogin = "no";
+    passwordAuthentication = false;
+    hostKeys = [
+      {
+        path = "/persist/etc/ssh/ssh_host_ed25519_key";
+        type = "ed25519";
+      }
+      {
+        path = "/persist/etc/ssh/ssh_host_rsa_key";
+        type = "rsa";
+        bits = 4096;
+      }
+    ];
+  };
 
-# Enable GnuPG Agent
-programs.gnupg.agent = {
-enable = true;
-enableSSHSupport = true;
-};
+  # Enable GnuPG Agent
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+  };
 
-################################################################################
-# Display Drivers
-################################################################################
+  ################################################################################
+  # Display Drivers
+  ################################################################################
 
-hardware.opengl = {
-driSupport = true; # install and enable Vulkan: https://nixos.org/manual/nixos/unstable/index.html#sec-gpu-accel
-driSupport32Bit = true;
-};
+  hardware.opengl = {
+    driSupport = true; # install and enable Vulkan: https://nixos.org/manual/nixos/unstable/index.html#sec-gpu-accel
+    driSupport32Bit = true;
+  };
 
-################################################################################
-# Window Managers & Desktop Environment
-################################################################################
+  ################################################################################
+  # Window Managers & Desktop Environment
+  ################################################################################
 
-services.dbus.enable = true;
-xdg.portal = {
-enable = true;
-wlr.enable = true;
-# gtk portal needed to make gtk apps happy
-extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-gtkUsePortal = true;
-};
+  services.dbus.enable = true;
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    # gtk portal needed to make gtk apps happy
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    gtkUsePortal = true;
+  };
 
-# enable sway window manager
-programs.sway = {
-enable = true;
-wrapperFeatures.gtk = true;
-};
+  # enable sway window manager
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
+  };
 
-################################################################################
-# Print
-################################################################################
+  ################################################################################
+  # Print
+  ################################################################################
 
-# Enable CUPS to print documents.
-services.printing.enable = true;
+  # Enable CUPS to print documents.
+  services.printing.enable = true;
 
-################################################################################
-# Sound
-################################################################################
+  ################################################################################
+  # Sound
+  ################################################################################
 
-# Enable sound.
-security.rtkit.enable = true;
-services.pipewire = {
-enable = true;
-alsa.enable = true;
-alsa.support32Bit = true;
-pulse.enable = true;
-jack.enable = true;
-};
+  # Enable sound.
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+  };
 
-################################################################################
-# Applications
-################################################################################
+  ################################################################################
+  # Applications
+  ################################################################################
 
-# List packages installed in system profile. To search, run:
-# $ nix search <packagename>
-environment.binsh = "${pkgs.dash}/bin/dash";
-environment.systemPackages = with pkgs; [
-nix-index
-efibootmgr
-parted
-gparted
-gptfdisk
-pciutils
-uutils-coreutils
-wget
-openssh
-ssh-copy-id
-ssh-import-id
-git
-git-extras
-zsh
-ffmpeg
-firefox-wayland
-screen
-tmux
-vim
-htop
-ncdu
-sway
-alacritty
-dbus-sway-environment
-configure-gtk
-wayland
-glib
-capitaine-cursors
-swaylock-effects
-swayidle
-grim
-slurp
-wl-clipboard
-wofi
-mako
-mpv
-lutris
-xivlauncher
-python39Full
-wineWowPackages.staging
-winetricks
-protontricks
-waybar
-adapta-gtk-theme
-adapta-kde-theme
-openrgb
-yadm
-mpd
-mpdris2
-playerctl
-pywal
-bitwarden
-exa
-gamemode
-helvum
-irqbalance
-ncmpcpp
-gnome.file-roller
-pcmanfm
-radeontop
-swappy
-zoxide
-fish
-dconf
-patchelf
-dash
-papirus-icon-theme
-libsForQt5.qt5ct
-killall
-polkit
-discord
-libsForQt5.qtstyleplugin-kvantum
-xdg-user-dirs
-xdg-utils
-xsettingsd
-steamPackages.steamcmd
-pavucontrol
-gnome.zenity
-openssl
-protonup
-python39Packages.pyotp
-betterdiscordctl
-p7zip
-unzip
-vscodium
-file
-perl
-nixpkgs-fmt
-bottles
-gamemode
-polymc
-sway-contrib.grimshot
-yt-dlp
-];
+  # List packages installed in system profile. To search, run:
+  # $ nix search <packagename>
+  environment.binsh = "${pkgs.dash}/bin/dash";
+  environment.systemPackages = with pkgs; [
+    nix-index
+    efibootmgr
+    parted
+    gparted
+    gptfdisk
+    pciutils
+    uutils-coreutils
+    wget
+    openssh
+    ssh-copy-id
+    ssh-import-id
+    git
+    git-extras
+    zsh
+    ffmpeg
+    firefox-wayland
+    screen
+    tmux
+    vim
+    htop
+    ncdu
+    sway
+    alacritty
+    dbus-sway-environment
+    configure-gtk
+    wayland
+    glib
+    capitaine-cursors
+    swaylock-effects
+    swayidle
+    grim
+    slurp
+    wl-clipboard
+    wofi
+    mako
+    mpv
+    lutris
+    xivlauncher
+    python39Full
+    wineWowPackages.staging
+    winetricks
+    protontricks
+    waybar
+    adapta-gtk-theme
+    adapta-kde-theme
+    openrgb
+    yadm
+    mpd
+    mpdris2
+    playerctl
+    pywal
+    bitwarden
+    exa
+    gamemode
+    helvum
+    irqbalance
+    ncmpcpp
+    gnome.file-roller
+    gnome.nautilus
+    radeontop
+    swappy
+    zoxide
+    fish
+    dconf
+    patchelf
+    dash
+    papirus-icon-theme
+    libsForQt5.qt5ct
+    killall
+    polkit
+    discord
+    libsForQt5.qtstyleplugin-kvantum
+    xdg-user-dirs
+    xdg-utils
+    xsettingsd
+    steamPackages.steamcmd
+    pavucontrol
+    gnome.zenity
+    openssl
+    protonup
+    python39Packages.pyotp
+    betterdiscordctl
+    p7zip
+    unzip
+    vscodium
+    file
+    perl
+    nixpkgs-fmt
+    bottles
+    gamemode
+    polymc
+    sway-contrib.grimshot
+    yt-dlp
+    qbittorrent
+  ];
 
-fonts.fonts = with pkgs; [
-noto-fonts
-noto-fonts-emoji
-noto-fonts-extra
-noto-fonts-cjk-sans
-noto-fonts-cjk-serif
-fira-code
-fira-code-symbols
-mplus-outline-fonts.githubRelease
-(nerdfonts.override { fonts = [ "Noto" ]; })
-];
+  fonts.fonts = with pkgs; [
+    noto-fonts
+    noto-fonts-emoji
+    noto-fonts-extra
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    fira-code
+    fira-code-symbols
+    mplus-outline-fonts.githubRelease
+    (nerdfonts.override { fonts = [ "Noto" ]; })
+  ];
 
-################################################################################
-# Program Config
-################################################################################
+  ################################################################################
+  # Program Config
+  ################################################################################
 
-programs.fish.enable = true;
-programs.noisetorch.enable = true;
-services.gnome.gnome-keyring.enable = true;
-hardware.ckb-next.enable = true;
+  programs.fish.enable = true;
+  programs.noisetorch.enable = true;
+  services.gnome.gnome-keyring.enable = true;
+  hardware.ckb-next.enable = true;
+  services.gvfs.enable = true;
 
-programs.steam = {
-enable = true;
-remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-};
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+  };
 
-services.mpd = {
-enable = true;
-user = "lfron";
-musicDirectory = "/home/lfron/Music";
-playlistDirectory = "/home/lfron/.config/mpd/playlists";
-dbFile = "/home/lfron/.config/mpd/database";
-dataDir = "/home/lfron/.config/mpd";
-extraConfig = ''
+  services.mpd = {
+    enable = true;
+    user = "lfron";
+    musicDirectory = "/home/lfron/Music";
+    playlistDirectory = "/home/lfron/.config/mpd/playlists";
+    dbFile = "/home/lfron/.config/mpd/database";
+    dataDir = "/home/lfron/.config/mpd";
+    extraConfig = ''
       audio_output {
         type "pipewire"
         name "Pipewire"
       }
     '';
-startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
-};
-systemd.services.mpd.environment = {
-# https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
-XDG_RUNTIME_DIR = "/run/user/1000"; # User-id 1000 must match above user. MPD will look inside this directory for the PipeWire socket.
-};
+    startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
+  };
+  systemd.services.mpd.environment = {
+    # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
+    XDG_RUNTIME_DIR = "/run/user/1000"; # User-id 1000 must match above user. MPD will look inside this directory for the PipeWire socket.
+  };
 
-programs.gamemode = {
-enable = true;
-enableRenice = true;
-};
+  programs.gamemode = {
+    enable = true;
+    enableRenice = true;
+  };
 }
