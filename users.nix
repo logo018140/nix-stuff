@@ -18,7 +18,7 @@
         isNormalUser = true;
         description = "Logan Fron";
         hashedPassword = "$6$ovjrHbT8FxLvXNCP$ZSYRVZ5nrQBEy1dewTb/s90yqs5KDoT7ytYiv6lEKFHjqEZKXWt4vp/dAvGZ4fT/KYuazRp9x32IRVPNl457d.";
-        extraGroups = [ "wheel" "networkmanager" ];
+        extraGroups = [ "wheel" "networkmanager" "adbusers" "lxd" ];
         openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFf8CPNUMwqUiQ3QFEZSOr2K1cNwY7bHw32pg75o2TMt JuiceSSH" ];
       };
     };

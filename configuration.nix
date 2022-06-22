@@ -70,6 +70,7 @@ in
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
+    autoOptimiseStore = true;
   };
 
   # This value determines the NixOS release from which the default
@@ -104,7 +105,7 @@ in
   # Use EFI boot loader with Grub.
   # https://nixos.org/manual/nixos/stable/index.html#sec-installation-partitioning-UEFI
   boot = {
-    #kernelPackages = pkgs.linuxPackages_zen;
+    kernelPackages = pkgs.linuxPackages_5_17;
     supportedFilesystems = [ "vfat" "zfs" "btrfs" ];
     initrd.kernelModules = [ "amdgpu" ];
     loader.grub = {
@@ -378,6 +379,7 @@ in
     desktop-file-utils
     gnome.seahorse
     swappy
+    jdk11
   ];
 
   fonts.fonts = with pkgs; [
@@ -400,6 +402,7 @@ in
   programs.noisetorch.enable = true;
   services.gnome.gnome-keyring.enable = true;
   hardware.ckb-next.enable = true;
+  programs.adb.enable = true;
 
   services.gvfs = {
     enable = true;
