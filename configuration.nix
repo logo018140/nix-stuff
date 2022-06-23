@@ -417,7 +417,7 @@ in
     lxd.enable = true;
   };
 
-  virtualisation.services.gvfs = {
+  services.gvfs = {
     enable = true;
     package = lib.mkForce pkgs.gnome3.gvfs;
   };
