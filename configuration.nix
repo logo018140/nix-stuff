@@ -187,10 +187,12 @@ in
 
   #3. Bluetooth: requires /persist/var/lib/bluetooth
   #4. ACME certificates: requires /persist/var/lib/acme
+  #5. Waydroid: requires /persist/var/lib/waydroid
   systemd.tmpfiles.rules = [
     "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
     "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
     "L /var/lib/acme - - - - /persist/var/lib/acme"
+    "L /var/lib/waydroid - - - - /persist/var/lib/waydroid"
   ];
 
   ################################################################################
@@ -228,6 +230,7 @@ in
   hardware.opengl = {
     driSupport = true; # install and enable Vulkan: https://nixos.org/manual/nixos/unstable/index.html#sec-gpu-accel
     driSupport32Bit = true;
+    extraPackages = with pkgs; [ rocm-opencl-icd ];
   };
 
   ################################################################################
@@ -377,6 +380,9 @@ in
     swappy
     jdk11
     virt-manager
+    android-studio
+    clinfo
+    waydroid
   ];
 
   fonts.fonts = with pkgs; [
@@ -400,6 +406,9 @@ in
   services.gnome.gnome-keyring.enable = true;
   hardware.ckb-next.enable = true;
   programs.adb.enable = true;
+  virtualisation.waydroid.enable = true;
+  virtualisation.lxc.enable = true;
+  virtualisation.lxd.enable = true;
 
   virtualisation.libvirtd = {
     enable = true;
