@@ -406,17 +406,18 @@ in
   services.gnome.gnome-keyring.enable = true;
   hardware.ckb-next.enable = true;
   programs.adb.enable = true;
-  virtualisation.waydroid.enable = true;
-  virtualisation.lxc.enable = true;
-  virtualisation.lxd.enable = true;
 
-  virtualisation.libvirtd = {
-    enable = true;
-    onBoot = "ignore";
-    onShutdown = "shutdown";
+  virtualisation = {
+    libvirtd = {
+      enable = true;
+      onBoot = "ignore";
+      onShutdown = "shutdown";
+    };
+    waydroid.enable = true;
+    lxd.enable = true;
   };
 
-  services.gvfs = {
+  virtualisation.services.gvfs = {
     enable = true;
     package = lib.mkForce pkgs.gnome3.gvfs;
   };
