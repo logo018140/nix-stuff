@@ -32,4 +32,6 @@
     XDG_DATA_HOME = "\${HOME}/.local/share";
     QT_QPA_PLATFORMTHEME = "qt5ct";
   };
+
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
 }

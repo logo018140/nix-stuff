@@ -339,7 +339,7 @@ in
     irqbalance
     ncmpcpp
     gnome.file-roller
-    gnome.nautilus
+    lxqt.pcmanfm-qt
     radeontop
     swappy
     zoxide
@@ -365,7 +365,6 @@ in
     betterdiscordctl
     p7zip
     unzip
-    vscodium
     file
     perl
     nixpkgs-fmt
@@ -383,6 +382,9 @@ in
     android-studio
     clinfo
     waydroid
+    lxde.lxmenu-data
+    menu-cache
+    vscode
   ];
 
   fonts.fonts = with pkgs; [
@@ -401,11 +403,19 @@ in
   # Program Config
   ################################################################################
 
-  programs.fish.enable = true;
-  programs.noisetorch.enable = true;
-  services.gnome.gnome-keyring.enable = true;
-  hardware.ckb-next.enable = true;
-  programs.adb.enable = true;
+  programs = {
+    gamemode = {
+      enable = true;
+      enableRenice = true;
+    };
+    steam = {
+      enable = true;
+      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    };
+    fish.enable = true;
+    noisetorch.enable = true;
+    adb.enable = true;
+  };
 
   virtualisation = {
     libvirtd = {
@@ -417,38 +427,35 @@ in
     lxd.enable = true;
   };
 
-  services.gvfs = {
-    enable = true;
-    package = lib.mkForce pkgs.gnome3.gvfs;
+  hardware = {
+    ckb-next.enable = true;
   };
 
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+  services = {
+    gvfs = {
+      enable = true;
+      package = lib.mkForce pkgs.gnome3.gvfs;
+    };
+    mpd = {
+      enable = true;
+      user = "lfron";
+      musicDirectory = "/home/lfron/Music";
+      playlistDirectory = "/home/lfron/.config/mpd/playlists";
+      dbFile = "/home/lfron/.config/mpd/database";
+      dataDir = "/home/lfron/.config/mpd";
+      extraConfig = ''
+        audio_output {
+          type "pipewire"
+          name "Pipewire"
+        }
+      '';
+      startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
+    };
+    gnome.gnome-keyring.enable = true;
   };
 
-  services.mpd = {
-    enable = true;
-    user = "lfron";
-    musicDirectory = "/home/lfron/Music";
-    playlistDirectory = "/home/lfron/.config/mpd/playlists";
-    dbFile = "/home/lfron/.config/mpd/database";
-    dataDir = "/home/lfron/.config/mpd";
-    extraConfig = ''
-      audio_output {
-        type "pipewire"
-        name "Pipewire"
-      }
-    '';
-    startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
-  };
   systemd.services.mpd.environment = {
     # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
     XDG_RUNTIME_DIR = "/run/user/1000"; # User-id 1000 must match above user. MPD will look inside this directory for the PipeWire socket.
-  };
-
-  programs.gamemode = {
-    enable = true;
-    enableRenice = true;
   };
 }
