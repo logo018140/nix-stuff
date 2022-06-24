@@ -339,7 +339,7 @@ in
     irqbalance
     ncmpcpp
     gnome.file-roller
-    lxqt.pcmanfm-qt
+    pcmanfm
     radeontop
     swappy
     zoxide
