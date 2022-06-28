@@ -43,7 +43,7 @@ let
       ''
         export XDG_DATA_DIRS=${datadir}:$XDG_DATA_DIRS
         gnome_schema=org.gnome.desktop.interface
-        gsettings set $gnome_schema gtk-theme 'Adapta-Nokto'
+        gsettings set $gnome_schema gtk-theme 'Dracula'
         gsettings set $gnome_schema icon-theme 'Papirus-Dark'
         gsettings set $gnome_schema cursor-theme 'capitaine-cursors'
         gsettings set $gnome_schema cursor-size 24
@@ -67,6 +67,9 @@ in
 
   nix = {
     autoOptimiseStore = true;
+    extraOptions = ''
+      experimental-features = nix-command
+   '';
   };
 
   # This value determines the NixOS release from which the default
@@ -101,7 +104,7 @@ in
   # Use EFI boot loader with Grub.
   # https://nixos.org/manual/nixos/stable/index.html#sec-installation-partitioning-UEFI
   boot = {
-    kernelPackages = pkgs.linuxPackages_5_17;
+    kernelPackages = pkgs.linuxPackages_zen;
     supportedFilesystems = [ "vfat" "zfs" "btrfs" ];
     initrd.kernelModules = [ "amdgpu" ];
     loader.grub = {
@@ -188,11 +191,11 @@ in
   #3. Bluetooth: requires /persist/var/lib/bluetooth
   #4. ACME certificates: requires /persist/var/lib/acme
   #5. Waydroid: requires /persist/var/lib/waydroid
+  #6. Libvirt: keep persistent
   systemd.tmpfiles.rules = [
     "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
     "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
     "L /var/lib/acme - - - - /persist/var/lib/acme"
-    "L /var/lib/waydroid - - - - /persist/var/lib/waydroid"
   ];
 
   ################################################################################
@@ -324,14 +327,13 @@ in
     winetricks
     protontricks
     waybar
-    adapta-gtk-theme
+    dracula-theme
     adapta-kde-theme
     openrgb
     yadm
     mpd
     mpdris2
     playerctl
-    pywal
     bitwarden
     exa
     gamemode
@@ -343,12 +345,11 @@ in
     radeontop
     swappy
     zoxide
-    fish
+    zsh
     dconf
     patchelf
     dash
     papirus-icon-theme
-    libsForQt5.qt5ct
     killall
     polkit
     discord
@@ -377,14 +378,11 @@ in
     desktop-file-utils
     gnome.seahorse
     swappy
-    jdk11
-    virt-manager
-    android-studio
+    jdk
     clinfo
-    waydroid
-    lxde.lxmenu-data
-    menu-cache
     vscode
+    unrar
+    ps_mem
   ];
 
   fonts.fonts = with pkgs; [
@@ -412,19 +410,16 @@ in
       enable = true;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     };
-    fish.enable = true;
+    zsh = {
+      enable = true;
+      ohMyZsh = {
+        enable = true;
+        plugins = [ "git" ];
+        theme = "avit";
+      };
+    };
     noisetorch.enable = true;
     adb.enable = true;
-  };
-
-  virtualisation = {
-    libvirtd = {
-      enable = true;
-      onBoot = "ignore";
-      onShutdown = "shutdown";
-    };
-    waydroid.enable = true;
-    lxd.enable = true;
   };
 
   hardware = {
