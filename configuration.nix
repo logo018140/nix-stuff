@@ -69,7 +69,7 @@ in
     autoOptimiseStore = true;
     extraOptions = ''
       experimental-features = nix-command
-   '';
+    '';
   };
 
   # This value determines the NixOS release from which the default
@@ -99,12 +99,18 @@ in
   # https://search.nixos.org/options?channel=21.05&show=fileSystems.%3Cname%3E.neededForBoot&query=fileSystems.%3Cname%3E.neededForBoot
   fileSystems."/persist".neededForBoot = true;
 
+  fileSystems."/media" = {
+    device = "/dev/disk/by-uuid/aaad8a13-a32d-45a9-b383-ee399e89aab1";
+    fsType = "btrfs";
+    options = [ "compress=zstd" ];
+  };
+
   services.fstrim.enable = true;
 
   # Use EFI boot loader with Grub.
   # https://nixos.org/manual/nixos/stable/index.html#sec-installation-partitioning-UEFI
   boot = {
-    kernelPackages = pkgs.linuxPackages_zen;
+    kernelPackages = pkgs.linuxPackages_xanmod;
     supportedFilesystems = [ "vfat" "zfs" "btrfs" ];
     initrd.kernelModules = [ "amdgpu" ];
     loader.grub = {
@@ -114,6 +120,7 @@ in
       zfsSupport = true;
       copyKernels = true; # https://nixos.wiki/wiki/NixOS_on_ZFS
       device = "nodev"; # "/dev/sdx", or "nodev" for efi only
+      useOSProber = true;
     };
   };
 
@@ -128,13 +135,14 @@ in
   boot.kernelParams = [ "elevator=none" ];
 
   boot.zfs = {
-    enableUnstable = true;
     requestEncryptionCredentials = true; # enable if using ZFS encryption, ZFS will prompt for password during boot
+    forceImportRoot = false;
   };
 
   services.zfs = {
     autoScrub.enable = true;
     autoSnapshot.enable = true;
+    trim.enable = true;
     # TODO: autoReplication
   };
 
@@ -246,7 +254,6 @@ in
     wlr.enable = true;
     # gtk portal needed to make gtk apps happy
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-    gtkUsePortal = true;
   };
 
   # enable sway window manager
@@ -328,7 +335,6 @@ in
     protontricks
     waybar
     dracula-theme
-    adapta-kde-theme
     openrgb
     yadm
     mpd
@@ -336,9 +342,7 @@ in
     playerctl
     bitwarden
     exa
-    gamemode
     helvum
-    irqbalance
     ncmpcpp
     gnome.file-roller
     pcmanfm
@@ -370,9 +374,7 @@ in
     perl
     nixpkgs-fmt
     bottles
-    gamemode
     polymc
-    sway-contrib.grimshot
     yt-dlp
     qbittorrent
     desktop-file-utils
@@ -383,6 +385,10 @@ in
     vscode
     unrar
     ps_mem
+    melonDS
+    citra-nightly
+    mgba
+    mpc-cli
   ];
 
   fonts.fonts = with pkgs; [
@@ -440,13 +446,14 @@ in
       dataDir = "/home/lfron/.config/mpd";
       extraConfig = ''
         audio_output {
-          type "pipewire"
-          name "Pipewire"
+          type "pulse"
+          name "Pulseaudio"
         }
       '';
       startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
     };
     gnome.gnome-keyring.enable = true;
+    irqbalance.enable = true;
   };
 
   systemd.services.mpd.environment = {
