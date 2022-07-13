@@ -63,10 +63,11 @@ in
 
   nixpkgs.config = {
     allowUnfree = true;
+    wine.build = "wineWow";
   };
 
   nix = {
-    autoOptimiseStore = true;
+    settings.auto-optimise-store = true;
     extraOptions = ''
       experimental-features = nix-command
     '';
@@ -196,13 +197,10 @@ in
     "ssh/ssh_host_ed25519_key.pub".source = "/persist/etc/ssh/ssh_host_ed25519_key.pub";
   };
 
-  #3. Bluetooth: requires /persist/var/lib/bluetooth
   #4. ACME certificates: requires /persist/var/lib/acme
   #5. Waydroid: requires /persist/var/lib/waydroid
   #6. Libvirt: keep persistent
   systemd.tmpfiles.rules = [
-    "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
-    "L /var/lib/bluetooth - - - - /persist/var/lib/bluetooth"
     "L /var/lib/acme - - - - /persist/var/lib/acme"
   ];
 
@@ -281,6 +279,14 @@ in
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
+    config = {
+      jack = {
+        "jack.properties" = {
+          "jack.short-name" = true;
+          "jack.merge-monitor" = true;
+        };
+      };
+    };
   };
 
   ################################################################################
@@ -291,104 +297,108 @@ in
   # $ nix search <packagename>
   environment.binsh = "${pkgs.dash}/bin/dash";
   environment.systemPackages = with pkgs; [
-    nix-index
+    alacritty
+    betterdiscordctl
+    bitwarden
+    capitaine-cursors
+    citra-nightly
+    clinfo
+    configure-gtk
+    dash
+    dbus-sway-environment
+    dconf
+    desktop-file-utils
+    discord
+    dracula-theme
     efibootmgr
-    parted
-    gparted
-    gptfdisk
-    pciutils
-    uutils-coreutils
-    wget
-    openssh
-    ssh-copy-id
-    ssh-import-id
+    exa
+    ffmpeg
+    file
+    firefox-wayland
     git
     git-extras
-    zsh
-    ffmpeg
-    firefox-wayland
-    screen
-    tmux
-    vim
-    htop
-    ncdu
-    sway
-    alacritty
-    dbus-sway-environment
-    configure-gtk
-    wayland
     glib
-    capitaine-cursors
-    swaylock-effects
-    swayidle
-    grim
-    slurp
-    wl-clipboard
-    wofi
-    mako
-    mpv
-    lutris
-    xivlauncher
-    python39Full
-    wineWowPackages.staging
-    winetricks
-    protontricks
-    waybar
-    dracula-theme
-    openrgb
-    yadm
-    mpd
-    mpdris2
-    playerctl
-    bitwarden
-    exa
-    helvum
-    ncmpcpp
     gnome.file-roller
-    pcmanfm
-    radeontop
-    swappy
-    zoxide
-    zsh
-    dconf
-    patchelf
-    dash
-    papirus-icon-theme
-    killall
-    polkit
-    discord
-    libsForQt5.qtstyleplugin-kvantum
-    xdg-user-dirs
-    xdg-utils
-    xsettingsd
-    steamPackages.steamcmd
-    pavucontrol
-    gnome.zenity
-    openssl
-    protonup
-    python39Packages.pyotp
-    betterdiscordctl
-    p7zip
-    unzip
-    file
-    perl
-    nixpkgs-fmt
-    bottles
-    polymc
-    yt-dlp
-    qbittorrent
-    desktop-file-utils
     gnome.seahorse
-    swappy
+    gnome.zenity
+    gparted
+    gptfdisk
+    grim
+    helvum
+    htop
     jdk
-    clinfo
-    vscode
-    unrar
-    ps_mem
+    killall
+    libsForQt5.qtstyleplugin-kvantum
+    lutris
+    lxmenu-data
+    mako
     melonDS
-    citra-nightly
     mgba
     mpc-cli
+    mpd
+    mpdris2
+    mpv
+    ncdu
+    ncmpcpp
+    nix-index
+    nixpkgs-fmt
+    nss
+    obs-studio
+    obs-studio-plugins.obs-vkcapture
+    obs-studio-plugins.wlrobs
+    openrgb
+    openssh
+    openssl
+    p7zip
+    papirus-icon-theme
+    parted
+    patchelf
+    pavucontrol
+    pciutils
+    pcmanfm
+    perl
+    playerctl
+    polkit
+    polymc
+    protontricks
+    protonup
+    ps_mem
+    python39Full
+    python39Packages.pyotp
+    qbittorrent
+    radeontop
+    screen
+    shared-mime-info
+    slurp
+    ssh-copy-id
+    ssh-import-id
+    steam
+    swappy
+    swappy
+    sway
+    swayidle
+    swaylock-effects
+    tmux
+    unrar
+    unzip
+    uutils-coreutils
+    vim
+    vscode
+    waybar
+    wayland
+    wget
+    wine-staging
+    winetricks
+    wl-clipboard
+    wofi
+    xdg-user-dirs
+    xdg-utils
+    xivlauncher
+    xsettingsd
+    yadm
+    yt-dlp
+    zoxide
+    zsh
   ];
 
   fonts.fonts = with pkgs; [
@@ -430,13 +440,11 @@ in
 
   hardware = {
     ckb-next.enable = true;
+    steam-hardware.enable = true;
   };
 
   services = {
-    gvfs = {
-      enable = true;
-      package = lib.mkForce pkgs.gnome3.gvfs;
-    };
+    gvfs.enable = true;
     mpd = {
       enable = true;
       user = "lfron";
@@ -454,10 +462,33 @@ in
     };
     gnome.gnome-keyring.enable = true;
     irqbalance.enable = true;
+    udisks2.enable = true;
   };
 
   systemd.services.mpd.environment = {
     # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
     XDG_RUNTIME_DIR = "/run/user/1000"; # User-id 1000 must match above user. MPD will look inside this directory for the PipeWire socket.
+  };
+
+  security.wrappers = {
+    # for ffxiv ACT parsing
+    "wine" = {
+      source = "${pkgs.wineWowPackages.staging}/bin/wine";
+      owner = "root";
+      group = "root";
+      capabilities = "cap_net_raw,cap_net_admin,cap_sys_ptrace+eip";
+    };
+    "wine64" = {
+      source = "${pkgs.wineWowPackages.staging}/bin/wine64";
+      owner = "root";
+      group = "root";
+      capabilities = "cap_net_raw,cap_net_admin,cap_sys_ptrace+eip";
+    };
+    "wineboot" = {
+      source = "${pkgs.wineWowPackages.staging}/bin/wineboot";
+      owner = "root";
+      group = "root";
+      capabilities = "cap_net_raw,cap_net_admin,cap_sys_ptrace+eip";
+    };
   };
 }
